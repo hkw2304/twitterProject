@@ -1,6 +1,7 @@
-import {createBrowserRouter, RouterProvider} from 'react-router-dom';
+import { createBrowserRouter, RouterProvider} from 'react-router-dom';
 import { createGlobalStyle } from 'styled-components';
-import {useState, useEffect} from 'react';
+import { useState, useEffect} from 'react';
+import { auth } from './firebase';
 import Layout from './components/layout';
 import Home from './routes/home';
 import Profile from './routes/profile';
@@ -8,19 +9,27 @@ import Login from './routes/login';
 import CreateAccount from './routes/create-account';
 import reset from 'styled-reset';
 import LoadingScreen from './components/loading-screen';
+import styled from 'styled-components';
+import ProtectedRoute from './components/protected-route';
 
 const router = createBrowserRouter([
   {
     path:"/",
-    element: <Layout></Layout>,
+    element: 
+      <ProtectedRoute>
+        <Layout></Layout>
+      </ProtectedRoute>,
     children: [
       {
         path: "",
-        element: <Home></Home>
+        element: 
+          <Home></Home>
+        
       },
       {
         path: "profile",
-        element: <Profile></Profile>
+        element: 
+          <Profile></Profile>
       }
     ],
   },
@@ -34,6 +43,7 @@ const router = createBrowserRouter([
   },
 ]);
 
+// 모듈에 있는 reset임
 const GlobalStyles = createGlobalStyle`
   ${reset};
   *{
@@ -47,22 +57,27 @@ const GlobalStyles = createGlobalStyle`
   }
 `;
 
-
+const Wrapper = styled.div`
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+`;
 
 function App() {
   const [isLoading, setIsLoaing] = useState(true);
   const init = async () => {
-    setTimeout(() => setIsLoaing(false), 2000);
+    await auth.authStateReady();
+    setIsLoaing(false);
   };
   useEffect(() => {
     init()
   }, []);
 
   return (
-    <>
+    <Wrapper>
       <GlobalStyles></GlobalStyles>
       {isLoading ? <LoadingScreen /> : <RouterProvider router={router} />}
-    </>
+    </Wrapper>
   )
 }
 
