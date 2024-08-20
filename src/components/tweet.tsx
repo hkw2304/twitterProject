@@ -50,15 +50,15 @@ export default function Tweet({username, photo, tweet, userId, id}: ITweet){
         
         if(!ok || user?.uid !== userId) return;
         try{
+            // 데이터베이스에서 해당 id를가진 데이터 삭제
             await deleteDoc(doc(db, 'tweets', id));
+            // 스토리지에 첨부한 사진도 삭제
             if(photo){
                 const photoRef = ref(storage, `tweets/${user.uid}/${id}`);
                 await deleteObject(photoRef);
             }
         }catch (e){
             console.log(e);
-        }finally{
-
         }
     }
     return <Wrapper>

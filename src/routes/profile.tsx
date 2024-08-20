@@ -51,8 +51,11 @@ export default function Profile(){
         if(!user) return;
         if(files && files.length === 1){
             const file = files[0];
+            // 스토리지의 해당경로에 저장한다 알려줌
             const locationRef = ref(storage, `avatars/${user?.uid}`);
+            // 해당경로에 업로드
             const result = await uploadBytes(locationRef, file);
+            // 경로에있는 데이터 다운로드
             const avatarUrl = await getDownloadURL(result.ref);
             setAvatar(avatarUrl);
             await updateProfile(user, {
@@ -62,6 +65,7 @@ export default function Profile(){
         setTweets(tweets);
     };
 
+    // 해당 유저의 게시글만 가져오기
     const fetchTweets = async () => {
         const tweetQuery = query(
             collection(db, 'tweets'),
@@ -69,6 +73,7 @@ export default function Profile(){
             orderBy('createdAt', 'desc'),
             limit(25),
         );
+        // 문서에 쿼리를 넘겨준다.
         const snapshot = await getDocs(tweetQuery);
         const tweets = snapshot.docs.map(doc => {
             const {tweet, createdAt, userId, username, photo} = doc.data();

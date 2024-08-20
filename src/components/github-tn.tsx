@@ -27,6 +27,7 @@ export default function GithubButton() {
     const navigate = useNavigate();
     const onClick = async () => {
         try {
+            // Github연동 로그인
             const provider = new GithubAuthProvider();
             await signInWithPopup(auth, provider);
             navigate('/');
